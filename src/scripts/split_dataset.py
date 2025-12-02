@@ -28,3 +28,4 @@ for cls in os.listdir(SRC):
         os.makedirs(out, exist_ok=True)
         for f in arr:
             shutil.copy(os.path.join(cls_path, f), os.path.join(out, f))
+
