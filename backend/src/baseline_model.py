@@ -18,6 +18,7 @@ def extract_features(directory):
     labels = gen.classes
     return features, labels
 
+
 if __name__ == '__main__':
     if not os.path.exists('models'):
         os.makedirs('models')

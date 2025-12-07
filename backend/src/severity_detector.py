@@ -6,6 +6,7 @@ def measure_severity(img):
         img = Image.open(img)
     img = img.convert("RGB").resize((256,256))
     arr = np.array(img)
+    
     brown_mask = (
         (arr[:,:,0] > 100) & 
         (arr[:,:,1] < 80) & 

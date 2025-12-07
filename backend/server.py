@@ -5,54 +5,53 @@ import tensorflow as tf
 import json
 import os
 
-# Import utilities from src
 from src.severity_detector import measure_severity
 from src.treatment import get_treatment
 
 app = FastAPI()
 
-# Paths
+
 MODEL_PATH = "models/model.h5"
 CLASS_INDICES_PATH = "models/class_indices.json"
 
-# Safety checks
+
 if not os.path.exists(MODEL_PATH):
     raise FileNotFoundError("❌ Model not found at models/model.h5")
 
 if not os.path.exists(CLASS_INDICES_PATH):
     raise FileNotFoundError("❌ class_indices.json missing in models/")
 
-# Load model
+
 model = tf.keras.models.load_model(MODEL_PATH)
 
-# Load class indices
+
 with open(CLASS_INDICES_PATH, "r") as f:
     class_indices = json.load(f)
 class_names = {v: k for k, v in class_indices.items()}
 
 
-# Preprocess function
+
 def preprocess(img: Image.Image):
     img = img.resize((224, 224))
     img_array = np.array(img) / 255.0
     return img_array.reshape(1, 224, 224, 3)
 
 
-# API Route
+
 @app.post("/predict")
 async def predict(file: UploadFile):
 
     img = Image.open(file.file).convert("RGB")
 
-    # Run prediction
+
     pred = model.predict(preprocess(img))
     disease_idx = int(np.argmax(pred))
     disease_name = class_names[disease_idx]
 
-    # Severity
+    
     severity, ratio = measure_severity(img)
 
-    # Treatment
+   
     treatment = get_treatment(disease_name, severity)
 
     return {
@@ -63,7 +62,7 @@ async def predict(file: UploadFile):
     }
 
 
-# Run server manually
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)

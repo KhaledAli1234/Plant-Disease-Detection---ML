@@ -13,7 +13,8 @@ OUT_MODEL = os.path.join('models','model.h5')
 IMG_SIZE = (224,224)
 BATCH = 32
 EPOCHS = 10
-
+ 
+ 
 def build(num_classes):
     base = MobileNetV2(weights='imagenet', include_top=False, input_shape=(224,224,3))
     base.trainable = False

@@ -11,6 +11,7 @@ OUTPUT_DIR = os.path.join("..", "plant-disease-ai", "dataset_splitted")
 TEST_RATIO = 0.15
 VAL_RATIO = 0.15  
 
+
 def load_and_clean(dataset_dir):
 
     image_paths = []

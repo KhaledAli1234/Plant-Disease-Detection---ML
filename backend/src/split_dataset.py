@@ -4,6 +4,7 @@ SRC = "data/images"
 DST = "data/dataset_split" 
 
 splits = ["train", "val", "test"]
+
 for s in splits:
     os.makedirs(os.path.join(DST, s), exist_ok=True)
 
