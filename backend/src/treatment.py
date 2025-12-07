@@ -1,5 +1,5 @@
+
 TREATMENTS = {
-    
     "Apple___Apple_scab": {
         "mild": "Remove infected leaves and improve airflow.",
         "moderate": "Apply fungicide like Captan or Mancozeb.",
@@ -137,8 +137,10 @@ TREATMENTS = {
     }
 }
 
-
 def get_treatment(disease, severity):
+    
     if disease in TREATMENTS:
         return TREATMENTS[disease].get(severity, "No treatment available.")
-    return "Unknown disease."
+
+    plant = disease.split("___")[0] if "___" in disease else "plant"
+    return f"No specific treatment found for {disease}. General care: monitor the {plant}, maintain good watering, airflow, and check for pests."

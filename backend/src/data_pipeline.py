@@ -1,46 +1,38 @@
-
 import os
 import shutil
 from PIL import Image
 from sklearn.model_selection import train_test_split
 
-DATASET_DIR = os.path.join("..", "plant-disease-ai", "dataset")
-
-OUTPUT_DIR = os.path.join("..", "plant-disease-ai", "dataset_splitted")
+DATASET_DIR = os.path.join("..", "dataset", "plantvillage_dataset")
+OUTPUT_DIR = os.path.join("..", "dataset_splitted")
 
 TEST_RATIO = 0.15
 VAL_RATIO = 0.15  
 
-
-def load_and_clean(dataset_dir):
-
+def load_dataset(dataset_dir):
+   
     image_paths = []
     labels = []
-    classes = sorted([d for d in os.listdir(dataset_dir) if os.path.isdir(os.path.join(dataset_dir, d))])
-    print(f"Found {len(classes)} classes.")
-    for cls in classes:
-        cls_dir = os.path.join(dataset_dir, cls)
-        for fname in os.listdir(cls_dir):
-            fpath = os.path.join(cls_dir, fname)
-      
-            if not os.path.isfile(fpath):
-                continue
-            
-            try:
-                with Image.open(fpath) as im:
-                    im.verify()
-            except Exception as e:
-                print(f"Removing corrupted image: {fpath}  ({e})")
-                try:
-                    os.remove(fpath)
-                except:
-                    pass
-                continue
-            image_paths.append(fpath)
-            labels.append(cls)
+
+    for root, dirs, files in os.walk(dataset_dir):
+        cls = os.path.basename(root)
+        
+        if root == dataset_dir:
+            continue
+        for f in files:
+            fpath = os.path.join(root, f)
+            if os.path.isfile(fpath):
+                image_paths.append(fpath)
+                labels.append(cls)
+
+    classes = sorted(list(set(labels)))
+    print(f"Found {len(classes)} classes: {classes}")
     return image_paths, labels
 
 def split_and_copy(image_paths, labels, out_dir, test_ratio=0.15, val_ratio=0.15):
+    if len(image_paths) == 0:
+        print("No images found. Check your dataset folder and files.")
+        return
 
     os.makedirs(out_dir, exist_ok=True)
 
@@ -69,7 +61,6 @@ def split_and_copy(image_paths, labels, out_dir, test_ratio=0.15, val_ratio=0.15
             dst_dir = os.path.join(out_dir, split_name, label)
             os.makedirs(dst_dir, exist_ok=True)
             dst_path = os.path.join(dst_dir, os.path.basename(path))
-           
             if not os.path.exists(dst_path):
                 shutil.copy2(path, dst_path)
     print("Copy complete.")
@@ -90,7 +81,6 @@ def count_per_split(out_dir):
             per_class[cls] = n
             total += n
         print(f"Split '{split}': total {total} images; classes: {len(per_class)}")
- 
         sorted_cls = sorted(per_class.items(), key=lambda x: x[1], reverse=True)[:10]
         for c,n in sorted_cls:
             print(f"  {c}: {n}")
@@ -99,8 +89,8 @@ def count_per_split(out_dir):
 if __name__ == "__main__":
     print("DATASET DIR:", DATASET_DIR)
     print("OUTPUT DIR:", OUTPUT_DIR)
-    imgs, labs = load_and_clean(DATASET_DIR)
-    print("Total images after cleaning:", len(imgs))
+    imgs, labs = load_dataset(DATASET_DIR)
+    print("Total images:", len(imgs))
     split_and_copy(imgs, labs, OUTPUT_DIR, test_ratio=TEST_RATIO, val_ratio=VAL_RATIO)
     print("Counts per split:")
     count_per_split(OUTPUT_DIR)
