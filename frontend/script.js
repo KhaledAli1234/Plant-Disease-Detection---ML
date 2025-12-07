@@ -1,49 +1,45 @@
-document.getElementById("predictBtn").addEventListener("click", async () => {
-    const fileInput = document.getElementById("plantImage");
-    const file = fileInput.files[0];
-    if (!file) return alert("Please upload an image.");
+async function uploadImage() {
+    const fileInput = document.getElementById('imageInput');
+    const resultBox = document.getElementById('result');
+    const loading = document.getElementById('loading');
 
+    resultBox.classList.add("hidden");
 
-    const preview = document.getElementById("preview");
-    preview.src = URL.createObjectURL(file);
-    document.getElementById("previewContainer").classList.remove("hidden");
+    if (!fileInput.files[0]) {
+        alert("Please select an image first!");
+        return;
+    }
 
-    
-    document.getElementById("loading").classList.remove("hidden");
-    document.getElementById("result").classList.add("hidden");
+    loading.classList.remove("hidden");
 
     const formData = new FormData();
-   formData.append("file", file);
-
+    formData.append("file", fileInput.files[0]);
 
     try {
-        const response = await fetch("http://localhost:8000/predict", { 
+        const res = await fetch("http://localhost:8000/predict", {
             method: "POST",
             body: formData
         });
 
-        const data = await response.json();
+        if (!res.ok) throw new Error("Server error");
 
-        
-        document.getElementById("loading").classList.add("hidden");
+        const data = await res.json();
 
-        
-        document.getElementById("diseaseName").innerText = `Disease: ${data.disease}`;
-        document.getElementById("severity").innerText = `Severity: ${data.severity}`;
-        document.getElementById("treatment").innerText = `Treatment: ${data.treatment}`;
+        resultBox.innerHTML = `
+            <b>Disease:</b> ${data.disease}<br>
+            <b>Severity:</b> <span class="${data.severity.toLowerCase()}">${data.severity}</span><br>
+            <b>Severity Ratio:</b> ${(data.severity_ratio * 100).toFixed(2)}%<br>
+            <b>Treatment:</b> ${data.treatment}
+        `;
 
-        
-        const severityElem = document.getElementById("severity");
-        severityElem.className = "";
-        if (data.severity.toLowerCase() === "mild") severityElem.classList.add("mild");
-        else if (data.severity.toLowerCase() === "intermediate") severityElem.classList.add("intermediate");
-        else if (data.severity.toLowerCase() === "severe") severityElem.classList.add("severe");
+        resultBox.classList.remove("hidden");
 
-        document.getElementById("result").classList.remove("hidden");
-
-    } catch (error) {
-        document.getElementById("loading").classList.add("hidden");
-        alert("Error predicting disease. Make sure the backend is running.");
-        console.error(error);
+    } catch (err) {
+        alert("Error connecting to server!");
+        console.error(err);
     }
-});
+
+    loading.classList.add("hidden");
+}
+
+document.getElementById("predictBtn").addEventListener("click", uploadImage);

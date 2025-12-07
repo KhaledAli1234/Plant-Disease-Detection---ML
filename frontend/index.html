@@ -3,31 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plant Disease Detection</title>
+    <title>Plant Disease Detector</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <div class="container">
-        <h1>Plant Disease Detection</h1>
+        <h1>🌱 Plant Disease Detection</h1>
 
-        <input type="file" id="plantImage" accept="image/*">
-        <button id="predictBtn">Predict Disease</button>
+        <input type="file" id="imageInput" accept="image/*">
 
-        <div id="loading" class="hidden">Predicting...</div>
+        <button id="predictBtn">Analyze</button>
 
-        <div id="result" class="hidden">
-            <h2>Prediction Result:</h2>
-            <p id="diseaseName"></p>
-            <p id="severity"></p>
-            <p id="treatment"></p>
-        </div>
+        <div id="loading" class="hidden">⏳ Analyzing...</div>
 
-        <div id="previewContainer" class="hidden">
-            <h3>Uploaded Image:</h3>
-            <img id="preview" src="" alt="Plant Image Preview">
-        </div>
+        <div id="result" class="hidden"></div>
     </div>
 
-    <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
