@@ -13,10 +13,11 @@ document.getElementById("predictBtn").addEventListener("click", async () => {
     document.getElementById("result").classList.add("hidden");
 
     const formData = new FormData();
-    formData.append("image", file);
+   formData.append("file", file);
+
 
     try {
-        const response = await fetch("http://localhost:5000/predict", { 
+        const response = await fetch("http://localhost:8000/predict", { 
             method: "POST",
             body: formData
         });
