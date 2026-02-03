@@ -24,35 +24,51 @@ export default function App() {
     { id: 3, plant: 'خيار', disease: 'العفن الرمادي', date: '2024-12-03', percentage: 72 }
   ]);
 
-  // دالة وهمية للتحليل
-  const analyzeImage = () => {
-    if (!selectedImage) return;
-    setIsAnalyzing(true);
+const analyzeImage = async () => {
+  if (!selectedImage) return;
+  setIsAnalyzing(true);
 
-    // محاكاة وقت التحليل
-    setTimeout(() => {
-      // نتيجة وهمية
-      const fakeResult = {
-        name: 'تبقع الأوراق',
-        percentage: Math.floor(Math.random() * 100),
-        treatment: 'رش النبات بمبيد فطر مناسب واتركه يجف.'
-      };
-      setResult(fakeResult);
-      setIsAnalyzing(false);
+  const formData = new FormData();
+  formData.append("file", selectedImage);
 
-      // حفظ في الهستوري
-      setHistory(prev => [
-        { 
-          id: prev.length + 1, 
-          plant: 'نبات مجهول', 
-          disease: fakeResult.name, 
-          date: new Date().toISOString().split('T')[0], 
-          percentage: fakeResult.percentage 
-        },
-        ...prev
-      ]);
-    }, 2000); // 2 ثانية للتجربة
-  };
+  try {
+    const res = await fetch("http://127.0.0.1:8000/predict", {
+      method: "POST",
+      body: formData
+    });
+
+    if (!res.ok) {
+      throw new Error("Server error: " + res.status);
+    }
+
+    const data = await res.json();
+
+    const resultObj = {
+      name: data.disease,
+      percentage: Math.round(data.severity_ratio * 100),
+      treatment: data.treatment
+    };
+
+    setResult(resultObj);
+
+    setHistory(prev => [
+      {
+        id: prev.length + 1,
+        plant: data.disease.split("___")[0] || "Unknown",
+        disease: data.disease,
+        date: new Date().toISOString().split("T")[0],
+        percentage: resultObj.percentage
+      },
+      ...prev
+    ]);
+  } catch (err) {
+    console.error(err);
+    alert("Error connecting to server!");
+  } finally {
+    setIsAnalyzing(false);
+  }
+};
+
 
   if (!isLoggedIn) {
     return (

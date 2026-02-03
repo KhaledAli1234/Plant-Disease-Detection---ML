@@ -8,12 +8,21 @@ import os
 
 from src.severity_detector import measure_severity
 from src.treatment import get_treatment
+from fastapi.middleware.cors import CORSMiddleware
+
 
 app = FastAPI()
 
 MODEL_PATH = "models/model.h5"
 CLASS_INDICES_PATH = "models/class_indices.json"
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],             
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 if not os.path.exists(MODEL_PATH):
     raise FileNotFoundError("❌ Model not found at models/model.h5")

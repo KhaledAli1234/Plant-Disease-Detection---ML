@@ -1,4 +1,3 @@
-
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.applications import MobileNetV2
@@ -7,8 +6,8 @@ from tensorflow.keras.models import Model
 import os
 
 
-TRAIN_DIR = os.path.join('..', 'dataset', 'dataset_splitted', 'train')
-VAL_DIR = os.path.join('..', 'dataset', 'dataset_splitted', 'val')
+TRAIN_DIR = os.path.join('..', 'dataset_splitted', 'train')
+VAL_DIR   = os.path.join('..', 'dataset_splitted', 'val')
 OUT_MODEL = os.path.join('..', 'models', 'model.h5')
 
 
